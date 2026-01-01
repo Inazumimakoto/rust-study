@@ -152,6 +152,108 @@ rand = "0.8.3"
 
 ---
 
+### 比較機能
+
+#### `std::cmp::Ordering`
+
+比較できるようにするためにインポート。
+
+```rust
+use std::cmp::Ordering;
+```
+
+#### `let guess: u32`
+
+明示的に整数型を指定。
+
+#### `guess.trim().parse()`
+
+標準入力された文字列を整数にパースする。
+
+```rust
+let guess: u32 = guess.trim().parse().expect("Please type a number!");
+```
+
+- `guess` は `String` 型
+- `trim()` で先頭と末尾の空白を削除 → `&str` を返す
+- `parse()` で数値に変換（C++の `std::stoi` みたいな感じ）
+- `expect()` でエラー時のメッセージ
+
+#### `match` と `cmp`
+
+![比較の実行結果](../images/ch02_comparison.png)
+
+```rust
+match guess.cmp(&secret_number) {
+    Ordering::Less => println!("Too small!"),
+    Ordering::Greater => println!("Too big!"),
+    Ordering::Equal => println!("You win!"),
+}
+```
+
+- `cmp` は「compare」で比較する
+- `guess.cmp()` は `guess` のメソッド！（`u32` は `Ord` トレイトを実装してる）
+- 結果として `Less`, `Greater`, `Equal` を返す
+- `match` で各パターンを処理（if文でも書けるけどmatchの方がRust的）
+
+##### ❓ `guess` には `&` がないのに `secret_number` には `&` がついてる。なんで？
+
+> 💡 **回答**: `cmp` メソッドのシグネチャが `fn cmp(&self, other: &Self)` だから！
+> 
+> | 部分 | 説明 |
+> |------|------|
+> | `guess` | `&self` として暗黙的に参照される |
+> | `&secret_number` | `other: &Self` として明示的に渡す |
+> 
+> Rustはメソッド呼び出し時に自動で `&` つけてくれる！
+
+##### ❓ if文じゃダメなの？
+
+```rust
+// if で書くと
+if guess < secret_number { println!("Too small!"); }
+else if guess > secret_number { println!("Too big!"); }
+else { println!("You win!"); }
+```
+
+`match` のメリット：
+- **網羅性チェック** → 全パターン書かないとコンパイルエラー！
+- **明確** → 3つの状態があることが一目瞭然
+- C++20の宇宙船演算子 `<=>` に近い
+
+---
+
+### シャドーイング
+
+```rust
+let guess = String::new();        // String型
+let guess: u32 = guess.trim()...  // u32型（新しい変数！）
+```
+
+同じ名前で新しい変数を作れる！
+
+- 「上書き」ではなく「隠す」（シャドーイング）
+- 古い変数はアクセス不能になるがメモリ的にはスコープ終了時に解放
+
+##### ❓ 別名にした方がわかりやすくない？
+
+> 💡 正直、好みの問題！
+> 
+> ```rust
+> // 方法1: シャドーイング
+> let guess = String::new();
+> let guess: u32 = guess.trim().parse()...
+> 
+> // 方法2: 別名（わかりやすさ重視）
+> let input = String::new();
+> let guess: u32 = input.trim().parse()...
+> ```
+> 
+> どっちでもOK。The Bookは機能を教えるためにシャドーイング使ってる。
+> 「なんか気持ち悪い」って感覚は大事にしていい！
+
+---
+
 ## 💡 学んだこと
 
 - `use` で標準ライブラリをインポート（C++の `#include` 的な）
@@ -163,3 +265,7 @@ rand = "0.8.3"
 - `[dependencies]` で外部クレートを追加
 - Cargoは依存の依存も自動解決してくれる！神！
 - `Cargo.lock` で再現性確保
+- `trim().parse()` で文字列を数値に変換
+- `match` でパターンマッチング（網羅性チェックあり！）
+- `cmp()` で比較、メソッド呼び出し時は自動で参照
+- シャドーイングで同じ名前の変数を再定義できる
