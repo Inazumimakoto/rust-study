@@ -104,7 +104,7 @@ cin >> guess;           // 変更される（参照？ポインタ？）
 read_line(guess);       // 変更される？されない？わからん！
 ```
 
-→ 詳しくは [C++ vs Rust 比較](cpp_fuck.md) 参照！
+→ 詳しくは [C++ vs Rust 比較](cpp_fuckyou.md) 参照！
 
 #### `.expect()`
 入力失敗した時のエラー処理もかける！！Javaと同じような感じ．
