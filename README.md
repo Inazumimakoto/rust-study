@@ -8,7 +8,7 @@
 |----|----------|------|
 | 0 | [前書き](devlog/ch00_foreword.md) | ✅ |
 | 1 | [入門](devlog/ch01_getting_started.md) | ✅ |
-| 2 | [数当てゲーム](devlog/ch02_guessing_game.md) | ⬜ |
+| 2 | [数当てゲーム](devlog/ch02_guessing_game.md) | ✅ |
 | 3 | [一般的なプログラミング概念](devlog/ch03_common_concepts.md) | ⬜ |
 | 4 | [所有権](devlog/ch04_ownership.md) | ⬜ |
 | 5 | [構造体](devlog/ch05_structs.md) | ⬜ |
