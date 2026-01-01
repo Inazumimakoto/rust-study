@@ -2,6 +2,10 @@
 
 [The Rust Programming Language](https://doc.rust-lang.org/book/) を読みながら学習中！
 
+> 🔥 **Rustを理解するには、C++がどれだけゴミかを理解すればいいだけ。**
+> 
+> → **[🖕 C++, FUCK YOU!](cpp_fuckyou.md)** ← 必読！
+
 ## 📊 進捗
 
 | 章 | タイトル | 状態 |
