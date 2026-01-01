@@ -1,0 +1,19 @@
+# ビルド成果物
+**/target/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Cargo.lock（ライブラリでは除外、バイナリでは含める場合あり）
+# Cargo.lock
+
+# バックアップファイル
+*.bak
+*.swp
+*~
+
+# IDE
+.idea/
+.vscode/
+*.iml
