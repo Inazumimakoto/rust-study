@@ -27,6 +27,36 @@ fn main() {
 - `main()` はエントリーポイント
 - `println!` はマクロ（`!`がついてるのがマクロの印）
 
+### 1.3 Cargo
+
+依存関係とか諸々管理してくれるビルドツール！今は単純だけど便利そう！
+
+#### プロジェクト作成
+
+```bash
+cargo new プロジェクト名
+```
+
+- `Cargo.toml` と `src/` ができる
+- ソースコードは `src/` に書いていく
+- `cargo new` しなくても、手動で `src/` にソースを移動して `Cargo.toml` 置けばOK
+
+![cargo new](../images/ch01_cargo_new.png)
+
+#### コマンドまとめ
+
+| コマンド | 説明 |
+|----------|------|
+| `cargo build` | バイナリを `target/debug/` に作成 |
+| `cargo run` | ビルド＋実行（変更なければコンパイルスキップ！賢い！） |
+| `cargo check` | コンパイルチェックのみ（バイナリ作らないから高速！） |
+| `cargo build --release` | 最適化ビルド → `target/release/` に出力 |
+
+- `--release` は Xcode のアーカイブみたいなもの（多分）
+- 最適化される分コンパイルは遅くなる
+
+![cargo build & run](../images/ch01_cargo_build_run.png)
+
 ## ❓ 疑問点
 
 - `!`がマクロ呼び出しらしいけど、見た目は関数じゃん！
