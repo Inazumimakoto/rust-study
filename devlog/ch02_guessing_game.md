@@ -254,6 +254,137 @@ let guess: u32 = guess.trim()...  // u32型（新しい変数！）
 
 ---
 
+### ループと完成！
+
+![数当てゲーム完成！](../images/ch02_complete.png)
+
+#### `loop {}`
+
+無限ループ！C++でいう `for(;;)` や `while(true)` みたいな感じ。
+
+```rust
+loop {
+    // 無限に繰り返す
+    if 条件 { break; }  // breakで抜ける
+}
+```
+
+#### `break` と `continue`
+
+- `break` → ループを抜ける
+- `continue` → ループの先頭に戻る（C++と同じ！）
+
+---
+
+### `match` は式！（超重要）
+
+```rust
+let guess: u32 = match guess.trim().parse() {
+    Ok(num) => num,
+    Err(_) => continue,
+};
+```
+
+構文がキモすぎる...と思ったけど、これがRustの特徴！
+
+#### Rustでは `match` は値を返す！
+
+| 言語 | switch/match | 値を返す？ |
+|------|--------------|-----------|
+| C++ | `switch` | ❌ 返さない（文） |
+| Rust | `match` | ✅ 返す（式） |
+
+#### C++で書くとこうなる
+
+```cpp
+// C++でRustの match を再現しようとすると...
+#include <iostream>
+#include <string>
+#include <optional>
+
+int main() {
+    std::string input;
+    std::cin >> input;
+    
+    // parse の代わり
+    int guess;
+    try {
+        guess = std::stoi(input);
+    } catch (const std::exception& e) {
+        // Err(_) => continue に相当
+        continue;  // ループ内なら
+    }
+    
+    // または optional を使う
+    std::optional<int> result = parse(input);
+    if (!result.has_value()) {
+        continue;
+    }
+    int guess = result.value();
+}
+```
+
+**Rustの方がスッキリ！**
+
+---
+
+### `Ok(num)` の `num` はどこから来た？
+
+**パターンマッチングで「取り出して」る！**
+
+```rust
+parse() → Result<u32, Error> を返す
+         ↓
+         Ok(値) または Err(エラー情報)
+```
+
+```rust
+match guess.trim().parse() {
+    Ok(num) => num,    // ← Okの中身を「num」という名前で取り出す！
+    Err(_) => continue,
+}
+```
+
+| パターン | 意味 |
+|----------|------|
+| `Ok(num)` | Okの中身を `num` って名前で使う |
+| `Ok(x)` | 名前は自由！`x` でも `value` でもOK |
+
+#### C++で書くと
+
+```cpp
+// C++17 の std::variant + std::visit でイメージ的に近いこと
+auto result = parse(input);
+std::visit([](auto&& arg) {
+    using T = std::decay_t<decltype(arg)>;
+    if constexpr (std::is_same_v<T, OkType>) {
+        int num = arg.value;  // ← 中身を取り出す
+        // ...
+    } else {
+        continue;
+    }
+}, result);
+
+// 正直、Rustの方が100倍読みやすい
+```
+
+---
+
+### `_` はワイルドカード
+
+```rust
+Err(_) => continue,
+//   ↑ 「エラーの中身は何でもいい、使わない」
+```
+
+| パターン | 意味 |
+|----------|------|
+| `_` | 何にでもマッチ、値は捨てる |
+| `Err(_)` | エラーの種類は気にしない |
+| `Err(e)` | エラー情報を `e` で使いたい時 |
+
+---
+
 ## 💡 学んだこと
 
 - `use` で標準ライブラリをインポート（C++の `#include` 的な）
@@ -268,4 +399,13 @@ let guess: u32 = guess.trim()...  // u32型（新しい変数！）
 - `trim().parse()` で文字列を数値に変換
 - `match` でパターンマッチング（網羅性チェックあり！）
 - `cmp()` で比較、メソッド呼び出し時は自動で参照
+- シャドーイングで同じ名前の変数を再定義できる
+- `loop {}` で無限ループ（C++の `for(;;)` 的な）
+- **`match` は式！値を返せる！**（C++の switch と違う）
+- `Ok(num)` でパターンマッチして中身を取り出せる
+- `_` はワイルドカード（何でもマッチ、値は捨てる）
+
+## 🎉 第2章完了！
+
+数当てゲーム完成！！！🦀
 - シャドーイングで同じ名前の変数を再定義できる
