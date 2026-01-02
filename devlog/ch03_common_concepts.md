@@ -459,6 +459,108 @@ match x {
 }
 ```
 
+### ループ
+
+Rustは**3つだけ**！シンプル！
+
+| 構文 | 用途 |
+|------|------|
+| `loop` | 無限ループ |
+| `while` | 条件ループ |
+| `for` | イテレータループ |
+
+#### loop（無限ループ）
+
+![無限ループ](../images/ch03_loop_infinite.png)
+
+![Ctrl+Cで止める](../images/ch03_loop_ctrl_c.png)
+
+```rust
+loop {
+    println!("again!");
+}
+// ^C で止める
+```
+
+`break` で抜ける、`continue` で次へ。ラベルで特定のループを抜けれる！
+
+#### for（イテレータ）
+
+![for each](../images/ch03_for_each.png)
+
+![結果](../images/ch03_for_each_result.png)
+
+```rust
+let a = [10, 20, 30, 40, 50];
+for element in a {
+    println!("{}", element);
+}
+
+// Range
+for i in 1..4 {  // 1, 2, 3
+    println!("{}", i);
+}
+```
+
+#### C++のループ構文多すぎ問題🤮
+
+| 構文 | C++ | Rust |
+|------|-----|------|
+| 伝統的for | `for(i=0;i<n;i++)` | ❌ なし |
+| Range-based | `for(auto x : v)` | `for x in v` |
+| while | `while(cond)` | `while cond` |
+| do-while | `do {} while(cond)` | ❌ **なし！** |
+| 無限ループ1 | `while(true)` | `loop` |
+| 無限ループ2 | `for(;;)` | ← なにこれきも |
+
+**C++は書き方多すぎて混乱の元！**
+
+#### なぜ `for(i=0;i<n;i++)` を使わない？
+
+```cpp
+// C++: バグの温床
+for (int i = 0; i <= n; i++) {  // <= か < か間違える
+    arr[i];  // 範囲外アクセス💀
+}
+```
+
+```rust
+// Rust: 安全で明確
+for i in 0..n { }        // Range明確
+for element in &arr { }  // インデックス不要！範囲外アクセス不可能！
+```
+
+#### イテレータは超強力！
+
+```rust
+// チェーン可能（関数型っぽい）
+let result: Vec<i32> = v.iter()
+    .map(|x| x * 2)      // 2倍
+    .filter(|x| *x > 4)  // フィルタ
+    .collect();          // 収集
+```
+
+```cpp
+// C++でこれやると...
+std::vector<int> result;
+for (auto x : v) {
+    int doubled = x * 2;
+    if (doubled > 4) {
+        result.push_back(doubled);
+    }
+}
+// 冗長！🤮
+```
+
+#### ポインタ/イテレータの安全性
+
+| | C++ | Rust |
+|---|-----|------|
+| 生ポインタ | 使える（危険💀） | `unsafe` 必須 |
+| 参照 | 寿命管理なし | 所有権で管理 |
+| null | あり（NullPointerException！）| **なし**（`Option<T>`） |
+| イテレータ無効化 | 起きる💀 | 所有権で防止 |
+
 ---
 
 ## 💡 学んだこと
@@ -485,6 +587,10 @@ match x {
 - if文の条件は**bool必須**（C++は0/非0で危険）
 - if文も式として使える（`let x = if ... { } else { };`）
 - else if多すぎ → matchを使え！
+- ループは3つだけ（`loop`, `while`, `for`）シンプル！
+- C++の `for(i=0;i<n;i++)` は使わない（イテレータ推奨）
+- do-whileはない（`loop` + `break`で代用）
+- イテレータはチェーン可能で超強力！
 
 
 
