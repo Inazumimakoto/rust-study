@@ -15,6 +15,24 @@ let mut y = 5; // 可変（変更可能）
 
 Rustはデフォルトで不変！C++と逆！
 
+#### 🔬 実験！不変変数を変更しようとすると...
+
+![不変変数を変更しようとするコード](../images/ch03_immutable_code.png)
+
+![エラー！cannot assign twice to immutable variable](../images/ch03_immutable_error.png)
+
+**エラー内容も超親切！**
+- どの行が問題か教えてくれる
+- `help: consider making this binding mutable` ← 直し方まで提案！
+
+#### ✅ `mut` をつけると...
+
+![mutをつけたコード](../images/ch03_mut_code.png)
+
+![成功！](../images/ch03_mut_success.png)
+
+動いた！🎉
+
 ### 不変変数 vs 定数
 
 「不変ならそれ定数じゃん」って思ったけど違う！
