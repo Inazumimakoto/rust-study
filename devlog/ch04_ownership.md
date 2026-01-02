@@ -300,17 +300,82 @@ main             makes_copy
 takes_ownership(s);  // 渡したら使えなくなる！不便！
 ```
 
-**これを解決するのが「参照と借用」！次のセクションで！**
+---
+
+## 参照と借用（Borrowing）
+
+**所有権を渡さずに値を使う方法！**
+
+### 参照を渡す
+
+![参照のコード](../images/ch04_borrow_code.png)
+
+![実行結果](../images/ch04_borrow_result.png)
 
 ```rust
-fn takes_reference(s: &String) {  // 借りるだけ！
-    println!("{}", s);
+fn main() {
+    let s1 = String::from("Hello");
+    let len = calculate_length(&s1);  // &s1 で参照を渡す！
+    println!("The length of '{}' is {}.", s1, len);  // s1 まだ使える！
 }
 
-let s = String::from("hello");
-takes_reference(&s);  // 所有権は渡さない！
-println!("{}", s);    // ✅ まだ使える！
+fn calculate_length(s: &String) -> usize {  // &String で受け取る
+    s.len()
+}
 ```
+
+### メモリの図
+
+![参照のメモリ構造](../images/ch04_borrow_diagram.png)
+
+`s` は `s1` を指すだけ。所有権は `s1` のまま！
+
+---
+
+## 🔥 Rust vs C++: 参照の書き方
+
+### Rust: 両方に `&` がある！明示的！
+
+```rust
+calculate_length(&s1);              // 渡す側: & あり！
+
+fn calculate_length(s: &String) {}  // 受ける側: & あり！
+```
+
+### C++: 渡す側に何もない...闇
+
+```cpp
+calculate_length(s1);               // 渡す側: & なし...
+
+int calculate_length(string& s) {}  // 受ける側だけ & あり
+```
+
+| | Rust | C++ |
+|---|------|-----|
+| 渡す側 | `&s1` **明示的！** | `s1` わからない |
+| 受ける側 | `&String` | `string&` |
+| 呼び出しを見て判断 | ✅ 一目瞭然 | ❌ 定義見ないと不明 |
+
+### C++の闇
+
+```cpp
+foo(x);  // これ何？
+         // - 参照渡し？
+         // - コピー？
+         // - ムーブ？
+         // 関数定義見ないとわからない💀
+```
+
+### Rustの光
+
+```rust
+foo(x);      // ムーブ
+foo(&x);     // 不変借用
+foo(&mut x); // 可変借用
+// 呼び出し側だけで全部わかる！✅
+```
+
+**Rustは呼び出し側を見るだけで所有権の動きがわかる！**
 
 ---
 
@@ -325,4 +390,5 @@ println!("{}", s);    // ✅ まだ使える！
 - **Clone**: ガチコピー（ヒープも含めて複製）
 - **Copy**: スタックだけの型は自動コピー（整数、bool等）
 - 関数に渡すとMoveされる（Copyな型は除く）
-- 「不便！」→ 借用で解決！（次のセクション）
+- **参照と借用**: `&` で所有権を渡さずに値を使える！
+- Rustは渡す側にも `&` があって一目でわかる（C++は闇）
