@@ -149,13 +149,168 @@ println!("{}", s2);     // ✅ s2 が所有者！
 
 ---
 
-## 所有権を理解すれば...
+## String型とメモリ
 
-- より安全なコードが書ける
-- メモリバグから解放される
-- Rustの真の力を手に入れる
+### 文字列リテラル vs String
 
-**難しいけど頑張ろう！** 💪
+```rust
+let s1 = "hello";              // 文字列リテラル（バイナリにハードコード）
+let s2 = String::from("hello"); // String型（ヒープに確保）
+```
+
+| | 文字列リテラル | String |
+|---|---------------|--------|
+| 保存場所 | バイナリ | ヒープ |
+| サイズ | コンパイル時に決定 | 実行時に可変 |
+| 可変性 | 不変 | 可変可能 |
+
+### Stringのメモリ構造
+
+![Stringのメモリ構造](../images/ch04_string_memory.png)
+
+スタックに `ptr`, `len`, `capacity`。ヒープに実際のデータ。
+
+---
+
+## Move（ムーブ）
+
+```rust
+let s1 = String::from("hello");
+let s2 = s1;  // s1 → s2 にムーブ！
+```
+
+![Move: s1が無効化される](../images/ch04_move.png)
+
+**s1 と s2 が同じヒープを指すと、スコープ抜ける時に二重解放！**
+
+→ だから Rust は **s1 を無効化** する！
+
+```rust
+let s1 = String::from("hello");
+let s2 = s1;
+
+// println!("{}", s1);  // ❌ エラー！s1 はもう使えない！
+println!("{}", s2);     // ✅ OK
+```
+
+---
+
+## Clone（クローン）= ガチコピー
+
+ヒープのデータも含めて完全コピーしたい場合：
+
+```rust
+let s1 = String::from("hello");
+let s2 = s1.clone();  // ガチコピー！
+
+println!("{}", s1);  // ✅ OK
+println!("{}", s2);  // ✅ OK
+```
+
+![Clone: 完全に別のメモリ](../images/ch04_clone.png)
+
+**注意**: `clone()` は高コスト（ヒープにメモリ確保するから）
+
+---
+
+## Copy トレイト（スタックだけの型）
+
+```rust
+let x = 5;
+let y = x;  // x も y も使える！矛盾してない？
+
+println!("{}", x);  // ✅ OK
+println!("{}", y);  // ✅ OK
+```
+
+**なぜ？** → 整数は `Copy` トレイトを持つ！
+
+### Copy な型
+
+| 型 | 説明 |
+|----|------|
+| `i32`, `u32`, 全整数型 | ✅ Copy |
+| `f32`, `f64` | ✅ Copy |
+| `bool` | ✅ Copy |
+| `char` | ✅ Copy |
+| `(i32, i32)` | ✅ Copy（中身が全部Copyなタプル）|
+| `(i32, String)` | ❌ Move（Stringが入ってるから）|
+
+**スタックだけの型はコピーが安いから Copy！**
+
+---
+
+## 関数と所有権
+
+### 所有権を渡す（Move）
+
+```rust
+fn main() {
+    let s = String::from("hello");
+    takes_ownership(s);         // s がムーブされる！
+    
+    // println!("{}", s);       // ❌ もう使えない！
+}
+
+fn takes_ownership(some_string: String) {
+    println!("{}", some_string);
+}   // some_string がドロップされてメモリ解放
+```
+
+### Copyな型は大丈夫
+
+```rust
+fn main() {
+    let x = 5;
+    makes_copy(x);              // コピーされる
+    
+    println!("{}", x);          // ✅ まだ使える！
+}
+
+fn makes_copy(some_integer: i32) {
+    println!("{}", some_integer);
+}
+```
+
+### 図解
+
+```
+String を渡す:
+main             takes_ownership
+┌─────┐          ┌─────────────┐
+│  s  │ ──Move──→│ some_string │
+└─────┘          └─────────────┘
+  ↓                    ↓
+使えない！           使える→解放
+
+i32 を渡す:
+main             makes_copy
+┌───┐            ┌──────────────┐
+│ x │ ──Copy──→  │ some_integer │
+└───┘            └──────────────┘
+  ↓                    ↓
+使える！            使える→終わり
+```
+
+---
+
+## 「不便すぎ！」→ 借用で解決！
+
+```rust
+takes_ownership(s);  // 渡したら使えなくなる！不便！
+```
+
+**これを解決するのが「参照と借用」！次のセクションで！**
+
+```rust
+fn takes_reference(s: &String) {  // 借りるだけ！
+    println!("{}", s);
+}
+
+let s = String::from("hello");
+takes_reference(&s);  // 所有権は渡さない！
+println!("{}", s);    // ✅ まだ使える！
+```
 
 ---
 
@@ -165,3 +320,9 @@ println!("{}", s2);     // ✅ s2 が所有者！
 - 手動管理は危険すぎる（C++🤮）
 - GCは安全だけど遅い
 - Rustの所有権は**コンパイル時チェック**で両方の問題を解決！
+- 文字列リテラルはバイナリ、Stringはヒープ
+- **Move**: 所有権が移動して元の変数は使えなくなる
+- **Clone**: ガチコピー（ヒープも含めて複製）
+- **Copy**: スタックだけの型は自動コピー（整数、bool等）
+- 関数に渡すとMoveされる（Copyな型は除く）
+- 「不便！」→ 借用で解決！（次のセクション）
