@@ -1,8 +1,7 @@
 fn main() {
-    let s1 = String::from("hello");
-    change(&mut s1)
-}
+    let mut s = String::from("hello");
 
-fn change(some_string: &mut String) {
-    some_string.push_str(",world");
+    let r1 = &mut s;
+    let r2 = &mut s;
+    println!("{},{}",r1,r2);
 }

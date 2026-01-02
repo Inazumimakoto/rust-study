@@ -334,6 +334,54 @@ Segmentation fault
 | switch | 罠だらけ（設計ミス）| 安全 |
 | 依存管理 | 発狂（中世）| Cargo神 |
 | 配列範囲外 | 未定義動作💀（狂気）| パニック（正気） |
+| イテレータ無効化 | 実行時💀（実験済）| コンパイル時に防止 |
+
+---
+
+## 8. イテレータ無効化（実験済み！🔬）
+
+### C++の闇
+
+```cpp
+vector<int> v = {1, 2, 3};
+int& first = v[0];  // 参照を取得
+
+for (int i = 0; i < 100; i++) {
+    v.push_back(i);  // 再配置が起きる！
+}
+
+cout << first;  // 💀 ダングリング参照！ゴミ値！
+```
+
+### 実験結果
+
+```
+Before:
+first のアドレス = 0x104439aa0
+
+After (push_back 100回後):
+v[0] のアドレス = 0x10443b0b0  ← 変わった！
+
+first (ダングリング!) = 4  ← ゴミ値！
+💀 アドレスが変わった！first はゴミを指してる！
+```
+
+**C++は何も言わずにゴミ値を返す！**
+
+### Rustだと？
+
+```rust
+let mut v = vec![1, 2, 3];
+let first = &v[0];
+v.push(4);        // ❌ コンパイルエラー！
+println!("{}", first);
+```
+
+```
+error[E0502]: cannot borrow `v` as mutable because it is also borrowed as immutable
+```
+
+**Rustは「借用中にプッシュするな！」ってコンパイル時に止める！**
 
 ---
 
