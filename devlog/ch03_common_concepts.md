@@ -511,7 +511,7 @@ for i in 1..4 {  // 1, 2, 3
 | while | `while(cond)` | `while cond` |
 | do-while | `do {} while(cond)` | ❌ **なし！** |
 | 無限ループ1 | `while(true)` | `loop` |
-| 無限ループ2 | `for(;;)` | ← なにこれきも |
+| 無限ループ2 | `for(;;)` | ← なにこれきも。泣いてるみたいだね。バグいっぱいあって泣きたいのはこっちだよ😭 |
 
 **C++は書き方多すぎて混乱の元！**
 
@@ -529,6 +529,28 @@ for (int i = 0; i <= n; i++) {  // <= か < か間違える
 for i in 0..n { }        // Range明確
 for element in &arr { }  // インデックス不要！範囲外アクセス不可能！
 ```
+
+#### `for x in a` vs `for x in &a`（所有権！）
+
+```rust
+// in a → 所有権を奪う（消費！）
+for element in vec {
+    println!("{}", element);
+}
+// vec はもう使えない！Moveされた！
+
+// in &a → 借用
+for element in &vec {
+    println!("{}", element);  // &T
+}
+// vec はまだ使える！
+```
+
+| 書き方 | 意味 | ループ後 |
+|--------|------|----------|
+| `for x in a` | 所有権Move | 使えない |
+| `for x in &a` | 借用 | 使える |
+| `for x in &mut a` | 可変借用 | 変更可能 |
 
 #### イテレータは超強力！
 
