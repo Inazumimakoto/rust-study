@@ -379,6 +379,81 @@ foo(&mut x); // 可変借用
 
 ---
 
+## 可変参照（Mutable Reference）
+
+### 不変参照では変更できない！
+
+![可変参照のコード](../images/ch04_mut_ref_code.png)
+
+![エラー](../images/ch04_mut_ref_error.png)
+
+```rust
+fn change(some_string: &String) {  // 不変参照
+    some_string.push_str(",world");  // ❌ エラー！
+}
+```
+
+### `&mut` で解決！
+
+```rust
+fn main() {
+    let mut s = String::from("hello");  // mut 必要！
+    change(&mut s);                      // &mut で渡す
+}
+
+fn change(some_string: &mut String) {   // &mut で受け取る
+    some_string.push_str(",world");      // ✅ OK！
+}
+```
+
+### `&` vs `&mut` は「権限」の違い！
+
+```
+&String     = 読み取り専用の鍵 🔒
+&mut String = 読み書きできる鍵 🔓
+```
+
+**同じ場所を指すけど、できることが違う！**
+
+---
+
+## 自動デリファレンス（Rustの便利機能）
+
+### C++ は `.` と `->` を使い分ける
+
+```cpp
+String s = "hello";
+String* ptr = &s;
+
+s.length();      // 値なら .
+ptr->length();   // ポインタなら ->
+(*ptr).length(); // これと同じ
+```
+
+### Rust は `.` だけ！
+
+```rust
+let s = String::from("hello");
+let r = &s;      // 参照
+let rr = &&s;    // 参照の参照
+
+s.len();   // ✅
+r.len();   // ✅ 自動で辿る！
+rr.len();  // ✅ 何段でも自動！
+```
+
+**Rust は参照を自動的に外してくれる！`->` 不要！**
+
+| | C++ | Rust |
+|---|-----|------|
+| 値のメソッド | `s.method()` | `s.method()` |
+| ポインタ/参照 | `ptr->method()` | `r.method()` |
+| 覚えること | 2種類 | **1種類！** |
+
+**「これポインタだっけ？値だっけ？」を考えなくていい！**
+
+---
+
 ## 💡 学んだこと
 
 - メモリ管理には3つの方法がある
@@ -392,3 +467,5 @@ foo(&mut x); // 可変借用
 - 関数に渡すとMoveされる（Copyな型は除く）
 - **参照と借用**: `&` で所有権を渡さずに値を使える！
 - Rustは渡す側にも `&` があって一目でわかる（C++は闇）
+- **可変参照**: `&mut` で参照先を変更できる（権限の違い！）
+- **自動デリファレンス**: `.` だけでOK（C++の `->` 不要！）
