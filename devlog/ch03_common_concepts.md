@@ -397,6 +397,70 @@ if (condition) { x = 5; } else { x = 10; }
 
 ---
 
+## 制御フロー
+
+### if文
+
+```rust
+if number < 5 {
+    println!("true");
+} else {
+    println!("false");
+}
+```
+
+![if文の基本](../images/ch03_if_basic.png)
+
+![実行結果](../images/ch03_if_basic_result.png)
+
+#### C++との違い
+
+| ポイント | Rust | C/C++ |
+|---------|------|-------|
+| 条件式の() | 不要 | 必須 |
+| 条件式の型 | **bool必須**✅ | 0/非0でOK（危険）🤮 |
+| ifは式？ | ✅ 式！ | ❌ 文 |
+
+```cpp
+// C++: 0以外はtrue扱い...危険すぎ
+if (5) { }        // 常にtrue 💀
+if (ptr) { }      // nullptrチェック...読みにくい
+```
+
+```rust
+// Rust: boolじゃないとエラー！安全！
+if 5 { }  // ❌ コンパイルエラー！
+```
+
+#### ifは式！
+
+![ifを式として使う](../images/ch03_if_expr.png)
+
+![結果: number = 5](../images/ch03_if_expr_result.png)
+
+```rust
+let number = if condition { 5 } else { 6 };
+```
+
+**注意**: if と else の戻り値の型は同じじゃないとダメ！
+
+#### else if 多すぎ → match使え！
+
+```rust
+// これはきたない...
+if x == 1 { } else if x == 2 { } else if x == 3 { } // ...
+
+// matchを使おう！（第6章）
+match x {
+    1 => {},
+    2 => {},
+    3 => {},
+    _ => {},
+}
+```
+
+---
+
 ## 💡 学んだこと
 
 - Rustはデフォルト不変（C++と逆！安全！）
@@ -418,6 +482,9 @@ if (condition) { x = 5; } else { x = 10; }
 - ブロック `{}` の最後の式が戻り値になる
 - 関数も最後の式が戻り値（`return` は早期リターン用）
 - セミコロンつけると式→文になる（`()` を返す）
+- if文の条件は**bool必須**（C++は0/非0で危険）
+- if文も式として使える（`let x = if ... { } else { };`）
+- else if多すぎ → matchを使え！
 
 
 
