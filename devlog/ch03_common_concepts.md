@@ -552,6 +552,8 @@ for element in &vec {
 | `for x in &a` | 借用 | 使える |
 | `for x in &mut a` | 可変借用 | 変更可能 |
 
+**所有権・借用の詳細は第4章で！** → [ch04_ownership.md](ch04_ownership.md)
+
 #### イテレータは超強力！
 
 ```rust
