@@ -15,7 +15,7 @@
 | 2 | [数当てゲーム](devlog/ch02_guessing_game.md) | ✅ |
 | 3 | [一般的なプログラミング概念](devlog/ch03_common_concepts.md) | ✅ |
 | 4 | [所有権](devlog/ch04_ownership.md) | ✅ |
-| 5 | [構造体](devlog/ch05_structs.md) | ⬜ |
+| 5 | [構造体](devlog/ch05_structs.md) | ✅ |
 | 6 | [Enum とパターンマッチ](devlog/ch06_enums.md) | ⬜ |
 | 7 | [パッケージ・クレート・モジュール](devlog/ch07_packages.md) | ⬜ |
 | 8 | [一般的なコレクション](devlog/ch08_collections.md) | ⬜ |

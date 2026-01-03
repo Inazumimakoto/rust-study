@@ -271,6 +271,51 @@ Rectangle::square(5) // Rectangle の中の square 関数
 
 ---
 
+## おまけ: 名前空間とは
+
+**「名前の空間」= 名前を置ける場所 = コードのフォルダ分け！**
+
+### なぜ必要？
+
+```cpp
+// 名前が被る問題
+void print() { }  // ライブラリA
+void print() { }  // ライブラリB 💀
+```
+
+### 解決
+
+```cpp
+namespace LibA { void print() { } }
+namespace LibB { void print() { } }
+
+LibA::print();  // Aのprint
+LibB::print();  // Bのprint
+```
+
+### 現実世界で例えると
+
+```
+🏠 田中家（tanaka::）
+  └── 太郎（tanaka::taro）
+
+🏠 佐藤家（sato::）
+  └── 太郎（sato::taro）
+
+同じ「太郎」でも区別できる！
+```
+
+### Rustでは `use` で楽できる
+
+```rust
+use std::io;
+io::stdin();  // std:: 不要！
+```
+
+**名前空間 = 幻想的な名前だけど、ただのフォルダ分け！📂**
+
+---
+
 ## 💡 学んだこと
 
 - 構造体 = 雛形、インスタンス = 実データ
@@ -285,3 +330,8 @@ Rectangle::square(5) // Rectangle の中の square 関数
 - `&self` は明示的（C++の `this` は暗黙）
 - 関連関数: `self` なし、`::` で呼ぶ
 - `::` = 「〇〇の中の△△」階層アクセス
+- 名前空間 = コードのフォルダ分け
+
+---
+
+> **第5章余裕🎵** 🦀
