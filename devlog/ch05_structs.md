@@ -137,6 +137,62 @@ struct User {
 
 ---
 
+## デバッグ出力 `#[derive(Debug)]`
+
+### 問題: 構造体をそのまま出力できない
+
+```rust
+println!("{}", rect1);  // ❌ エラー！
+```
+
+### 解決: `#[derive(Debug)]`
+
+```rust
+#[derive(Debug)]  // ← これを追加！（Derive = 派生）
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+println!("{:?}", rect1);   // Rectangle { width: 30, height: 50 }
+println!("{:#?}", rect1);  // 整形出力（Pretty Print）
+```
+
+`:?` ← オットセイみたい！🦭
+
+### C++だと？
+
+```cpp
+// 自分で operator<< を定義しないとダメ！
+ostream& operator<<(ostream& os, const Rectangle& r) {
+    os << "Rectangle { width: " << r.width 
+       << ", height: " << r.height << " }";
+    return os;
+}
+```
+
+**C++は手動、Rustは1行！**
+
+### 他にも derive できる
+
+```rust
+#[derive(Debug, Clone, Copy, PartialEq)]
+struct Point { x: i32, y: i32 }
+```
+
+| derive | 機能 |
+|--------|------|
+| `Debug` | `{:?}` で出力 |
+| `Clone` | `.clone()` でコピー |
+| `Copy` | 自動コピー（スタック型）|
+| `PartialEq` | `==` で比較 |
+
+### トレイトとは？
+
+**「機能の契約」**。C++の抽象クラス/virtual に近い。
+
+---
+
 ## 💡 学んだこと
 
 - 構造体 = 雛形、インスタンス = 実データ
