@@ -305,6 +305,38 @@ fn generate(seed: u64) -> i32 { ... }  // 非公開
 pub use crate::front_of_house::hosting;
 ```
 
+### struct と enum の pub の違い
+
+| | pub つけたら |
+|---|-------------|
+| struct | 構造体だけ公開、**フィールドは個別に pub 必要** |
+| enum | 全部公開（variant も自動で公開）|
+
+```rust
+// struct: フィールドごとに pub 必要
+pub struct User {
+    pub name: String,    // 公開
+    password: String,    // 非公開（外から触れない）
+}
+
+// enum: variant は自動で公開
+pub enum Status {
+    Active,   // 自動で公開
+    Inactive, // 自動で公開
+}
+```
+
+**非公開フィールドがあると外から作れない → コンストラクタ関数必要！**
+
+### いつ使う？
+
+**→ ライブラリ作るとき！**
+
+```
+普通のアプリ開発: 全部 pub でOK
+ライブラリ開発: 内部実装を隠す
+```
+
 ---
 
 ## 💡 学んだこと
