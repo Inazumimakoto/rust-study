@@ -17,7 +17,7 @@
 | 4 | [所有権](devlog/ch04_ownership.md) | ✅ |
 | 5 | [構造体](devlog/ch05_structs.md) | ✅ |
 | 6 | [Enum とパターンマッチ](devlog/ch06_enums.md) | ✅ |
-| 7 | [パッケージ・クレート・モジュール](devlog/ch07_packages.md) | ⬜ |
+| 7 | [パッケージ・クレート・モジュール](devlog/ch07_packages.md) | ✅ |
 | 8 | [一般的なコレクション](devlog/ch08_collections.md) | ⬜ |
 | 9 | [エラー処理](devlog/ch09_error_handling.md) | ⬜ |
 | 10 | [ジェネリクス・トレイト・ライフタイム](devlog/ch10_generics.md) | ⬜ |

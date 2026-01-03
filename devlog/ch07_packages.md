@@ -393,9 +393,42 @@ pub enum Status {
 
 ## 💡 学んだこと
 
+## モジュールを別ファイルに分割
+
+**`mod foo { }` → `mod foo;` に変えて別ファイルへ！**
+
+```rust
+// src/lib.rs
+mod front_of_house;  // ← セミコロン！front_of_house.rs を読む
+```
+
+```
+src/
+├── lib.rs              ← mod front_of_house;
+├── front_of_house.rs   ← pub mod hosting;
+└── front_of_house/
+    └── hosting.rs      ← pub fn add_to_waitlist() {}
+```
+
+**use や呼び出しは変更不要！モジュールツリーは同じ！**
+
+---
+
+## 💡 学んだこと
+
 - **パッケージ** = プロジェクト全体（Cargo.toml があるところ）
 - **クレート** = バイナリ（main.rs）or ライブラリ（lib.rs）
-- **モジュール** = コードの整理（ファイル/フォルダ分け）
-- **パス** = `std::io::stdin` みたいな場所指定
+- **クレートルート** = コンパイルの起点
+- **モジュール** = コードのフォルダ分け（1000行地獄を避ける）
+- **パス** = `std::io::stdin`、`::` は階層アクセス
 - **use** = パスを短くする
 - **pub** = 公開する（デフォルトは非公開）
+- **struct/enum の pub 違い**: struct はフィールド個別、enum は全部公開
+- **`::` vs `.`**: モジュール/型 vs メソッド
+- **トレイト use 必要**: `.gen_range()` 使うには `use rand::Rng;`
+- **ファイル分割**: `mod foo;` で foo.rs を読む
+
+---
+
+> **モジュール = フォルダ分け！整理術！** 🦀
+
