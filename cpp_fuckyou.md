@@ -335,6 +335,59 @@ Segmentation fault
 | 依存管理 | 発狂（中世）| Cargo神 |
 | 配列範囲外 | 未定義動作💀（狂気）| パニック（正気） |
 | イテレータ無効化 | 実行時💀（実験済）| コンパイル時に防止 |
+| 二重解放 | 実行時💀（実験済）| Moveで防止 |
+
+---
+
+## 9. 二重解放（Double Free）（実験済み！🔬）
+
+### C++の闇
+
+```cpp
+class MyString {
+    char* data;
+public:
+    MyString(const char* s) {
+        data = new char[strlen(s) + 1];
+        strcpy(data, s);
+    }
+    ~MyString() {
+        delete[] data;  // デストラクタでメモリ解放
+    }
+};
+
+int main() {
+    MyString s1("hello");
+    MyString s2 = s1;  // シャローコピー！同じポインタ！
+}   // s2 → delete、s1 → delete 💥 二重解放！
+```
+
+### 実験結果
+
+```
+📦 [1] コンストラクタ: data=0x1028a9ae0 内容="hello"
+
+--- s2 = s1 でコピー ---
+（何も出力されない = ただポインタをコピー）
+
+💀 [1] デストラクタ: data=0x1028a9ae0 を解放...  ← 1回目 OK
+💀 [1] デストラクタ: data=0x1028a9ae0 を解放...  ← 2回目 💥
+zsh: trace trap  ← クラッシュ！
+```
+
+**同じメモリを2回 delete → クラッシュ！**
+
+### Rustだと？
+
+```rust
+let s1 = String::from("hello");
+let s2 = s1;  // Move！s1 は無効化！
+
+// s1 使おうとしたらコンパイルエラー！
+// → 二重解放は起きようがない！
+```
+
+**Rustは所有権の移動（Move）で二重解放を防ぐ！**
 
 ---
 

@@ -530,6 +530,30 @@ error[E0502]: cannot borrow `v` as mutable because it is also borrowed as immuta
 | `&` と `&mut` は共存不可 | イテレータ無効化防止 |
 | `&` は複数OK | 読むだけなら安全 |
 
+### 🔬 おまけ: C++二重解放実験（実験済み！）
+
+```cpp
+class MyString {
+    char* data;
+public:
+    MyString(const char* s) { data = new char[strlen(s) + 1]; strcpy(data, s); }
+    ~MyString() { delete[] data; }
+};
+
+int main() {
+    MyString s1("hello");
+    MyString s2 = s1;  // シャローコピー！
+}   // 💥 二重解放でクラッシュ！
+```
+
+```
+💀 デストラクタ: data=0x1028a9ae0 を解放...  ← 1回目 OK
+💀 デストラクタ: data=0x1028a9ae0 を解放...  ← 2回目 💥
+zsh: trace trap  ← クラッシュ！
+```
+
+**Rustは Move で二重解放を防ぐ！**
+
 ---
 
 ## 💡 学んだこと
@@ -549,3 +573,4 @@ error[E0502]: cannot borrow `v` as mutable because it is also borrowed as immuta
 - **自動デリファレンス**: `.` だけでOK（C++の `->` 不要！）
 - **借用ルール**: `&mut` は1つだけ、`&` と `&mut` は共存不可
 - イテレータ無効化をコンパイル時に防ぐ（C++は実行時に💀）
+- **二重解放**: C++はクラッシュ、RustはMoveで防止
