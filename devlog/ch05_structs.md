@@ -193,6 +193,84 @@ struct Point { x: i32, y: i32 }
 
 ---
 
+## メソッド定義 `impl`
+
+`impl` = **Implementation（実装）**
+
+### メソッドを定義
+
+```rust
+impl Rectangle {
+    fn area(&self) -> u32 {  // &self = 自分への参照
+        self.width * self.height
+    }
+    
+    fn can_hold(&self, other: &Rectangle) -> bool {
+        self.width > other.width && self.height > other.height
+    }
+}
+
+// 使い方
+rect1.area();              // 型は書かない
+rect1.can_hold(&rect2);    // 第2引数から書く
+```
+
+### C++との違い
+
+| | C++ | Rust |
+|---|-----|------|
+| 書く場所 | 構造体の中 | `impl` ブロック（外）|
+| 自身を参照 | `this->` （暗黙）| `&self`（明示的！）|
+| 可変参照 | `this` | `&mut self` |
+
+### `self` の書き方
+
+```rust
+impl Rectangle {
+    fn method(&self) { }      // 不変借用（読むだけ）
+    fn mutate(&mut self) { }  // 可変借用（変更する）
+    fn consume(self) { }      // Move（所有権をもらう）
+}
+```
+
+---
+
+## 関連関数（Associated Function）
+
+**`self` がない関数！インスタンスなしで呼べる！**
+
+```rust
+impl Rectangle {
+    fn square(size: u32) -> Rectangle {  // self がない！
+        Rectangle { width: size, height: size }
+    }
+}
+
+let sq = Rectangle::square(10);  // :: で呼ぶ！
+```
+
+`String::from()` もこれ！
+
+---
+
+## `::` の意味
+
+**「〇〇の中の△△」= 階層アクセス！**
+
+| 用途 | 例 |
+|------|-----|
+| 名前空間 | `std::cin`, `std::io` |
+| 関連関数 | `String::from()`, `Vec::new()` |
+| モジュール | `crate::module::function` |
+
+```rust
+std::io::stdin()     // std の中の io の中の stdin
+String::from("hi")   // String の中の from 関数
+Rectangle::square(5) // Rectangle の中の square 関数
+```
+
+---
+
 ## 💡 学んだこと
 
 - 構造体 = 雛形、インスタンス = 実データ
@@ -202,3 +280,8 @@ struct Point { x: i32, y: i32 }
 - `..` で構造体更新
 - タプル構造体（C++にはない！）
 - `&str` フィールドにはライフタイムが必要（第10章）
+- `#[derive(Debug)]` でデバッグ出力（C++は手動）
+- `impl` でメソッド定義（C++は構造体の中、Rustは外）
+- `&self` は明示的（C++の `this` は暗黙）
+- 関連関数: `self` なし、`::` で呼ぶ
+- `::` = 「〇〇の中の△△」階層アクセス
