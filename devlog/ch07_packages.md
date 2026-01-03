@@ -240,12 +240,33 @@ use std::io::stdin;
 stdin().read_line(&mut input);
 ```
 
-### 複数インポート
+### ネストした use（まとめて書く）
 
 ```rust
-use std::io::{self, Write};  // io と io::Write
-use std::collections::*;      // 全部（非推奨）
+// 長い
+use std::io;
+use std::io::Write;
+
+// ネストで短く
+use std::io::{self, Write};
+//             ↑ io 自体
+//                  ↑ io::Write
 ```
+
+```rust
+// まとめる例
+use std::{cmp::Ordering, io};
+```
+
+### Glob（全部持ち込む）⚠️
+
+```rust
+use std::collections::*;  // 全部持ち込む
+```
+
+**⚠️ 非推奨！どこから来たかわからなくなる！**
+
+**テストでは使う：`use super::*;`**
 
 ### as で別名
 
