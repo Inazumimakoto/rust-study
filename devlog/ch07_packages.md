@@ -132,17 +132,61 @@ my_project/
 
 ---
 
-## モジュールの定義
+## モジュール = コードのフォルダ分け！
 
-### インラインで定義
+**1ファイル1000行を避けるための整理術！**
+
+### Before: 地獄（1ファイルに全部）
 
 ```rust
+// main.rs に全部... 1000行...
+fn create_user() {}
+fn add_to_waitlist() {}
+fn take_order() {}
+// どこに何があるかわからない！
+```
+
+### After: ファイル分割
+
+```
+src/
+├── main.rs         ← メイン処理だけ
+├── user.rs         ← ユーザー関連
+└── order.rs        ← 注文関連
+```
+
+```rust
+// main.rs
+mod user;   // user.rs を読み込む
+mod order;  // order.rs を読み込む
+
+fn main() {
+    user::create("taro");
+    order::take();
+}
+```
+
+---
+
+## モジュールの2つの書き方
+
+### 1. インラインモジュール（1ファイル内で整理）
+
+```rust
+// lib.rs（1ファイルだけど論理的に分けてる）
 mod front_of_house {
     pub mod hosting {
         pub fn add_to_waitlist() {}
     }
 }
 ```
+
+| 記法 | 意味 |
+|------|------|
+| `mod foo { ... }` | {} の中身がモジュール（インライン）|
+| `mod foo;` | `foo.rs` ファイルを読み込む |
+
+### 2. 別ファイルモジュール（物理的にファイル分け）
 
 ### 別ファイルで定義
 
