@@ -125,6 +125,46 @@ y.unwrap()      // None だとパニック
 y.unwrap_or(0)  // None のときは 0
 ```
 
+### Option の実用例
+
+```rust
+// 1. 割り算（0で割れない）
+fn divide(a: i32, b: i32) -> Option<i32> {
+    if b == 0 { None } else { Some(a / b) }
+}
+
+divide(10, 2);  // Some(5)
+divide(10, 0);  // None
+
+// 2. 配列の安全なアクセス
+let nums = vec![1, 2, 3];
+nums.get(0);   // Some(&1)
+nums.get(10);  // None（C++ならクラッシュ💀）
+
+// 3. 検索
+let names = vec!["Alice", "Bob"];
+names.iter().find(|&x| *x == "Bob");  // Some(&"Bob")
+names.iter().find(|&x| *x == "Dave"); // None
+```
+
+### なぜ `-> User` じゃダメ？
+
+```rust
+fn find_user(id: i32) -> User {
+    // 見つからなかったら...何を返す？
+    // Rust に NULL ないから返せない！
+}
+
+// だから Option を使う
+fn find_user(id: i32) -> Option<User> {
+    // 見つかった → Some(user)
+    // 見つからない → None
+}
+```
+
+**`-> User` = 必ずある**
+**`-> Option<User>` = あるかも、ないかも**
+
 ---
 
 ## match: C++ の switch の完全上位互換
