@@ -64,3 +64,17 @@ The Book 完走したら...
 
 **C++ の闇から解放されて、安全な低レベルプログラミングへ！** 🦀
 
+---
+
+## 🌐 WASM ブラウザデモ
+
+**Rust がブラウザで動いた！**
+
+![WASM Demo](assets/wasm_demo.webp)
+
+```bash
+cd projects/wasm_hello
+wasm-pack build --target web
+python3 -m http.server 8080
+# http://localhost:8080 でアクセス！
+```
