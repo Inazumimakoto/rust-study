@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Rust WASM Demo 🦀</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        h1 { color: #f77f00; }
+        .result {
+            background: #0f3460;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+        button {
+            background: #f77f00;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover { background: #e07000; }
+        input {
+            padding: 10px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            border: none;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🦀 Rust WASM Demo</h1>
+    <p>Rust で書いたコードがブラウザで動いてる！</p>
+    
+    <h2>1. 足し算</h2>
+    <button onclick="testAdd()">2 + 3 = ?</button>
+    <div id="addResult" class="result">結果がここに出る</div>
+    
+    <h2>2. 挨拶</h2>
+    <input type="text" id="nameInput" placeholder="名前を入力">
+    <button onclick="testGreet()">挨拶する</button>
+    <div id="greetResult" class="result">結果がここに出る</div>
+
+    <script type="module">
+        import init, { add, greet } from './pkg/wasm_hello.js';
+
+        await init();
+
+        window.testAdd = function() {
+            const result = add(2, 3);
+            document.getElementById('addResult').textContent = `2 + 3 = ${result} (Rust で計算！)`;
+        };
+
+        window.testGreet = function() {
+            const name = document.getElementById('nameInput').value || 'World';
+            const result = greet(name);
+            document.getElementById('greetResult').textContent = result;
+        };
+
+        console.log('🦀 Rust WASM loaded!');
+    </script>
+</body>
+</html>
