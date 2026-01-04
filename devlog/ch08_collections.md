@@ -159,3 +159,109 @@ let row = vec![
 - NLL: 「最後に使った場所」で借用終了
 - `*i` でデリファレンス
 - Enum で複数型を入れられる
+
+---
+
+## String（文字列）
+
+### 命名規則
+
+| 種類 | 命名 | 例 |
+|------|------|-----|
+| 型/構造体/Enum | PascalCase | `String`, `OsString` |
+| 関数/変数 | snake_case | `to_string()`, `push_str()` |
+
+### String vs &str
+
+```rust
+let s1: &str = "hello";                  // 文字列リテラル（参照）
+let s2: String = String::from("hello");  // String（ヒープ）
+let s3: String = "hello".to_string();    // これも同じ
+```
+
+| | `&str` | `String` |
+|---|--------|----------|
+| 場所 | 参照 | ヒープ |
+| 可変 | ❌ | ✅ |
+| 文字列リテラル | ✅ | ❌ |
+
+**ダブルクォートで書いた文字列 = `&str`**
+
+### UTF-8 vs Unicode
+
+```
+Unicode = 文字のカタログ（番号）
+UTF-8 = Unicode を保存する方法（バイト列）
+
+'A' → UTF-8: 1バイト
+'あ' → UTF-8: 3バイト
+'З' → UTF-8: 2バイト
+```
+
+**Rust の String は UTF-8 エンコーディング！**
+
+### 文字列操作
+
+```rust
+let mut s = String::from("foo");
+
+s.push_str("bar");  // 文字列追加
+s.push('!');        // 1文字追加
+
+// + 演算子（s1 は move される！）
+let s1 = String::from("Hello");
+let s2 = String::from("World");
+let s3 = s1 + &s2;  // s1 は使えなくなる
+
+// format! マクロ（所有権奪わない、読みやすい）
+let s = format!("{}-{}", s2, s3);
+```
+
+### 参照外し型強制（Deref Coercion）
+
+```rust
+&String → &str  // 自動変換！
+```
+
+### 添字アクセスできない！
+
+```rust
+let s = String::from("Здравствуйте");
+s[0];  // ❌ エラー！
+```
+
+**UTF-8 は可変長だから `[0]` が何を返すべきかわからない！**
+
+```rust
+// 代わりの方法
+s.as_bytes()[0];   // バイト
+s.chars().nth(0);  // 文字
+&s[0..4];          // スライス（境界注意！）
+
+// 文字を走査
+for c in "नमस्ते".chars() {
+    println!("{}", c);
+}
+```
+
+### &str と String のメソッド共有
+
+| メソッド | `&str` | `String` |
+|---------|--------|----------|
+| `.chars()` | ✅ | ✅ |
+| `.len()` | ✅ | ✅ |
+| `.push()` | ❌ | ✅ |
+
+**変更系は `String` だけ！読み取り系は両方！**
+
+---
+
+## 💡 学んだこと（String）
+
+- 文字列リテラル `"..."` は `&str`
+- `to_string()` と `String::from()` は同じ
+- UTF-8 エンコーディング（可変長）
+- 添字アクセス禁止（`.chars()` を使う）
+- `+` は左側の所有権を奪う、`format!` は奪わない
+- `&String` → `&str` 自動変換（参照外し型強制）
+
