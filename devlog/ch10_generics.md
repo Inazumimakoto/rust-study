@@ -152,6 +152,50 @@ class Dog : public Animal {
 
 **Rust は「継承のないオブジェクト指向」！**
 
+### なぜ継承がない？
+
+**1. ダイヤモンド問題**
+
+```
+       Animal
+       /    \
+     Dog    Cat
+       \    /
+       DogCat  ← 💀 Animal が2つある！
+```
+
+**2. 継承は密結合**
+
+親を変えると子が全部壊れる😭
+
+**3. 継承より合成（Composition over Inheritance）**
+
+```rust
+// 継承じゃなくて「持つ」
+struct Dog {
+    animal_data: AnimalData,
+}
+```
+
+**4. トレイトで解決**
+
+```rust
+trait Walkable { fn walk(&self); }
+trait Swimmable { fn swim(&self); }
+
+// 複数トレイトを実装できる！ダイヤモンド問題なし！
+impl Walkable for Duck { ... }
+impl Swimmable for Duck { ... }
+```
+
+| 問題 | 継承 | トレイト |
+|------|------|---------|
+| ダイヤモンド問題 | 💀 | ✅ なし |
+| 密結合 | 😭 | ✅ 疎結合 |
+| 柔軟性 | 低い | 高い |
+
+**継承は便利に見えて罠が多い！トレイトの方が安全！**
+
 ---
 
 ## トレイト境界
