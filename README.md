@@ -19,7 +19,7 @@
 | 6 | [Enum とパターンマッチ](devlog/ch06_enums.md) | ✅ |
 | 7 | [パッケージ・クレート・モジュール](devlog/ch07_packages.md) | ✅ |
 | 8 | [一般的なコレクション](devlog/ch08_collections.md) | ✅ |
-| 9 | [エラー処理](devlog/ch09_error_handling.md) | ⬜ |
+| 9 | [エラー処理](devlog/ch09_error_handling.md) | ✅ |
 | 10 | [ジェネリクス・トレイト・ライフタイム](devlog/ch10_generics.md) | ⬜ |
 | 11 | [テスト](devlog/ch11_testing.md) | ⬜ |
 | 12 | [I/Oプロジェクト: CLIツール](devlog/ch12_cli_project.md) | ⬜ |
