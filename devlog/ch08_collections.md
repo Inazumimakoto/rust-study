@@ -265,3 +265,96 @@ for c in "नमस्ते".chars() {
 - `+` は左側の所有権を奪う、`format!` は奪わない
 - `&String` → `&str` 自動変換（参照外し型強制）
 
+---
+
+## HashMap（ハッシュマップ）
+
+C++ の `std::unordered_map` と同じ！
+
+### 作成
+
+```rust
+use std::collections::HashMap;
+
+let mut scores = HashMap::new();
+scores.insert(String::from("Blue"), 10);
+scores.insert(String::from("Yellow"), 50);
+```
+
+### 取得
+
+```rust
+let team_name = String::from("Blue");
+let score = scores.get(&team_name);  // Some(&10) or None
+```
+
+### 走査
+
+```rust
+for (key, value) in &scores {
+    println!("{}: {}", key, value);
+}
+```
+
+### 所有権に注意！
+
+```rust
+let key = String::from("Blue");
+let value = String::from("10");
+map.insert(key, value);  // key, value は move される！
+// println!("{}", key);  // ❌ 使えない！
+```
+
+### 上書き
+
+```rust
+scores.insert(String::from("Blue"), 10);
+scores.insert(String::from("Blue"), 25);  // 25 に上書き
+```
+
+### キーがない時だけ挿入
+
+```rust
+scores.entry(String::from("Yellow")).or_insert(50);
+scores.entry(String::from("Blue")).or_insert(50);  // Blue はあるから何もしない
+```
+
+### 単語カウントの例
+
+```rust
+let text = "hello world wonderful world";
+let mut map = HashMap::new();
+
+for word in text.split_whitespace() {
+    let count = map.entry(word).or_insert(0);
+    //          ↑ なかったら 0 を入れて &mut を返す
+    //            あったら既存の &mut を返す
+    *count += 1;
+}
+// {"hello": 1, "world": 2, "wonderful": 1}
+```
+
+**`or_insert(0)` = 「なかったら 0 から始める」ショートカット！**
+
+---
+
+## 💡 学んだこと（HashMap）
+
+- `HashMap::new()` で作成、`use` が必要
+- `insert()` で追加、`get()` で取得（Option）
+- insert するとキー・値の所有権が move
+- `or_insert()` = 「なかったら挿入、あったらそのまま」
+
+---
+
+## 第8章まとめ
+
+| コレクション | C++ | 用途 |
+|-------------|-----|------|
+| `Vec<T>` | `vector<T>` | 可変長配列 |
+| `String` | `string` | 文字列（UTF-8）|
+| `HashMap<K, V>` | `unordered_map` | キーと値 |
+
+> **コレクション完全に理解した！** 🦀
+
+
