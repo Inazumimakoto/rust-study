@@ -140,9 +140,34 @@ C++ は警告なし！Rust ならコンパイルエラー！
 
 ### 感想
 今日は 8〜11章完了で爆速！特にライフタイムの理解に時間かかったけど、「関数の使い方ルールを書く」と理解したらスッキリ！
-WASM も試してみた！どんな OS・CPU でも動くの最高！
+
+### 🌐 WASM で遊んだ！
+
+**Rust が ブラウザで動いた！！！**
+
+```
+Rust コード → wasm-pack → .wasm + .js → ブラウザで実行！
+```
+
+- `#[wasm_bindgen]` で JavaScript から呼べるようにする
+- `wasm-pack build --target web` でブラウザ用にビルド
+- JavaScript から Rust 関数を直接呼べる！
+
+```rust
+// Rust
+#[wasm_bindgen]
+pub fn add(a: i32, b: i32) -> i32 { a + b }
+```
+
+```javascript
+// JavaScript
+const result = add(2, 3);  // 5 (Rust で計算！)
+```
+
+**ブラウザで ML や ICN クライアントも動かせるかも！夢が広がる！**
 
 明日は minigrep 完成させて13章（イテレータ・クロージャ）へ！🦀
+
 
 
 
