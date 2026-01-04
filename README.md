@@ -21,7 +21,7 @@
 | 8 | [一般的なコレクション](devlog/ch08_collections.md) | ✅ |
 | 9 | [エラー処理](devlog/ch09_error_handling.md) | ✅ |
 | 10 | [ジェネリクス・トレイト・ライフタイム](devlog/ch10_generics.md) | ✅ |
-| 11 | [テスト](devlog/ch11_testing.md) | ⬜ |
+| 11 | [テスト](devlog/ch11_testing.md) | ✅ |
 | 12 | [I/Oプロジェクト: CLIツール](devlog/ch12_cli_project.md) | ⬜ |
 | 13 | [イテレータとクロージャ](devlog/ch13_iterators.md) | ⬜ |
 | 14 | [Cargo と Crates.io](devlog/ch14_cargo.md) | ⬜ |
