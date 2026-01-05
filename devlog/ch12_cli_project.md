@@ -165,3 +165,41 @@ fn main() {
 
 ---
 
+## 4. リファクタリング: コンストラクタ `Config::new`
+
+`parse_config` という関数名は少し独特。多くの言語では、インスタンスを作成する役割は「コンストラクタ」が担う。
+Rust には `new` という特別なキーワードはないが、慣習として `new` という名前の **関連関数** を定義する。
+
+### 実装 (`src/main.rs`)
+
+```rust
+impl Config {
+    fn new(args: &[String]) -> Config {
+        let query = args[1].clone();
+        let filename = args[2].clone();
+
+        Config { query, filename }
+    }
+}
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+    let config = Config::new(&args); // 構造体に関連付いた関数呼び出しになる
+    // ...
+}
+```
+
+### 💡 C++ のメンバ関数と同じ？
+
+かなり近いけど、厳密には **「静的メンバ関数 (static member function)」** にあたるよ！
+
+| Rust の用語 | 定義の見た目 | 呼び出し方 | C++ でいうと |
+|-------------|--------------|------------|--------------|
+| **関連関数** (Associated Function) | `fn new(args: ...)` <br> (`self` を取らない) | `Config::new(...)` | **static メンバ関数** <br> `Config::new(...)` |
+| **メソッド** (Method) | `fn check(self)` <br> (`self` を取る) | `config.check()` | **メンバ関数** <br> `config.check()` |
+
+`Config::new` はインスタンス (`self`) なしで呼び出せるから、C++ の `static` 関数と同じ扱い。
+Rust ではコンストラクタもただの「関連関数」の一つとして実装するのが特徴！
+
+---
+
