@@ -199,7 +199,76 @@ fn main() {
 | **メソッド** (Method) | `fn check(self)` <br> (`self` を取る) | `config.check()` | **メンバ関数** <br> `config.check()` |
 
 `Config::new` はインスタンス (`self`) なしで呼び出せるから、C++ の `static` 関数と同じ扱い。
-Rust ではコンストラクタもただの「関連関数」の一つとして実装するのが特徴！
+### 悪い例: 引数が足りないとパニック！
+
+ここまでは引数の数をチェックしていなかったので、引数なしで実行すると配列外アクセスで強制終了（パニック）していた。
+
+![Panic Screenshot](../assets/panic_screenshot.png)
+
+```bash
+index out of bounds: the len is 1 but the index is 1
+```
 
 ---
+
+## 5. リファクタリング: エラー処理の改善
+
+パニックは「バグ」の時に使うべきで、ユーザーの使い方が間違っている時は「親切なエラーメッセージ」を出して終了するのが良いプログラム。
+
+### 実装の変更点 (`src/main.rs`)
+
+```rust
+use std::process; // プロセスを終了させるために必要
+
+fn main() {
+    // unwrap_or_else: 成功したら値を、失敗したら {} 内を実行！
+    let config = Config::new(&args).unwrap_or_else(|err| {
+        println!("Problem parsing arguments: {}", err);
+        process::exit(1); // 異常終了コード 1 で終わる
+    });
+    // ...
+}
+
+// 戻り値を Result 型に変更
+// 成功時: Config, 失敗時: &'static str (静的文字列スライス)
+impl Config {
+    fn new(args: &[String]) -> Result<Config, &'static str> {
+        if args.len() < 3 {
+            return Err("not enough arguments");
+        }
+        // ... (省略)
+        Ok(Config { query, filename })
+    }
+}
+```
+
+### 💡 徹底解説: これは何？？
+
+#### 1. `Result<Config, &'static str>`
+*   **`Result<Okの型, Errの型>`**: 処理が成功するか失敗するかわからない時に使う型。
+*   **`&'static str`**: 「プログラムが動いている間ずっとメモリにある文字列」のこと。
+    *   `"not enough arguments"` のようなハードコードされた文字列リテラルは、コンパイル時にバイナリに含まれるので、寿命は「永遠 (`'static`)」。
+    *   つまり、「エラーメッセージ（固定の文字列）を返すよ」という意味。
+
+#### 2. `unwrap` vs `unwrap_or_else`
+*   **`unwrap()`**:
+    *   成功 (`Ok`) → 中身を取り出す。
+    *   失敗 (`Err`) → **問答無用でパニック（強制終了）**。
+*   **`unwrap_or_else(...)`**:
+    *   成功 (`Ok`) → 中身を取り出す。
+    *   失敗 (`Err`) → **パニックせずに、指定された関数（クロージャ）を実行する**。
+
+#### 3. `|err| { ... }` (クロージャ)
+*   **クロージャ (Closure)**: 名前をつけずにその場で作れる「匿名関数」。
+*   `|引数| { 中身 }` という独特な構文。
+*   今回は「失敗した時のエラーメッセージ (`err`) を受け取って、それを表示して終了する」という処理を `unwrap_or_else` に渡している。
+
+```rust
+// イメージ
+fn anonymous_function(err: &'static str) {
+    println!("Problem parsing arguments: {}", err);
+    process::exit(1);
+}
+```
+これと同じことを `|err| { ... }` で短く書いているだけ！🦀
 
