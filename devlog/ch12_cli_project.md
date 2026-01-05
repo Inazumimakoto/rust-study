@@ -427,6 +427,37 @@ match run(config) {
 
 ---
 
+## 9. ライブラリ機能の開発: テスト駆動開発 (TDD)
+
+### 実装した関数 (`src/lib.rs`)
+
+```rust
+pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+    let mut results = Vec::new();
+    for line in contents.lines() {
+        if line.contains(query) {
+            results.push(line);
+        }
+    }
+    results
+}
+```
+
+### 💡 なぜ `contents` だけにライフタイム `'a` が必要なの？
+
+**「戻り値 (`Vec<&str>`) の中身は、どっちの引数から来たの？」** とコンパイラが迷うから！
+
+1.  **引数**: `query` (検索語) と `contents` (検索対象の文章)。
+2.  **戻り値**: 見つかった行のリスト (`Vec<&str>`)。
+3.  **実体**: このリストに入っている文字列スライス `&str` は、**`contents` の一部** を切り取ったもの（参照）。`query` の一部ではない。
+4.  **借用規則**: 「データの貸し主 (`contents`) が消えたら、借りてる人 (`results`) も使えなくなるよ」と教えてあげる必要がある。
+
+だから、`contents: &'a str` と `-> Vec<&'a str>` に同じ `'a` を付けて、**「戻り値の寿命は `contents` と同じですよ！」** と明示しているんだ。
+`query` は結果に含まれないから、ライフタイムを気にする必要がない（省略可）。
+
+---
+
+
 
 
 
