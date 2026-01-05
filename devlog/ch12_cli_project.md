@@ -457,6 +457,39 @@ pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
 
 ---
 
+## 10. 環境変数を扱う (`env::var`)
+
+コマンドライン引数だけでなく、「環境変数」で挙動を変えられるようにする。
+今回は `CASE_INSENSITIVE` という環境変数がセットされていたら、大文字小文字を区別しない検索モードにする。
+
+### 実装のポイント (`src/lib.rs`)
+
+```rust
+use std::env;
+
+impl Config {
+    pub fn new(args: &[String]) -> Result<Config, &'static str> {
+        // ...
+        // env::var は環境変数がセットされていないと Err を返す。
+        // is_err() を使うことで、「セットされていない (Err) = true (区別する)」
+        // 「セットされている (Ok) = false (区別しない)」というロジックにしている。
+        let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
+
+        Ok(Config { query, filename, case_sensitive })
+    }
+}
+```
+
+*   **`env::var("NAME")`**: 環境変数を取得する。戻り値は `Result<String, VarError>`。
+*   **`is_err()`**: `Result` が `Err` かどうかをチェックするメソッド。
+    *   環境変数が **ない** → `Err` → `is_err()` は `true` → `case_sensitive` は `true` (区別する)。
+    *   環境変数が **ある** → `Ok` → `is_err()` は `false` → `case_sensitive` は `false` (区別しない)。
+
+逆転の発想みたいで面白いロジック！
+
+---
+
+
 
 
 
