@@ -113,3 +113,55 @@ fn parse_config(args: &[String]) -> (&str, &str) {
 `args` 変数（`Vec<String>`）は「文字列という箱」が並んだ棚みたいなもので、その「棚の一部（または全部）」を指し示しているのが `&[String]`。文字列の中身を切り刻んでいるわけではない！
 
 ---
+
+## 3. リファクタリング: 構造体 `Config` の導入
+
+引数の意味を明確にするため、タプルではなく専用の構造体 `Config` を使う。
+
+### 実装 (`src/main.rs`)
+
+```rust
+struct Config {
+    query: String,
+    filename: String,
+}
+
+fn parse_config(args: &[String]) -> Config {
+    // args は借用しているので、所有権を奪うことはできない。
+    // Config はデータを所有したい (String) なので、データをコピー (clone) する必要がある。
+    let query = args[1].clone();
+    let filename = args[2].clone();
+
+    Config { query, filename }
+}
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+    let config = parse_config(&args); // 呼び出し側もスッキリ！
+    
+    // ...
+}
+```
+
+### 💡 なぜ `clone()` が必要なの？
+
+**所有権の問題を回避するため！**
+
+1.  **`Config` の定義**: `query: String` となっている。これは `Config` がデータの **所有権** を持ちたいということ。
+2.  **`args` の状態**: `parse_config` は `&[String]` (参照) を受け取っている。つまり、データの所有者は `main` 関数の `args` 変数。
+3.  **移動 (Move) 不可**: 借りているもの (`&args`) から、中身 (`String`) を勝手に持ち出して、自分のもの (`Config`) にすることはできない（所有権の移動禁止）。
+
+#### 解決策
+*   **A案: `clone()` する** (今回採用)
+    *   データをまるっとコピーして新しい `String` を作る。
+    *   **メリット**: 実装が単純、所有権の問題が消える。
+    *   **デメリット**: メモリと時間を少し余分に使う（今回の規模なら無視できる）。
+*   **B案: ライフタイムを使う** (今の段階では難しい)
+    *   `struct Config<'a> { query: &'a str, ... }` のように参照を持つ。
+    *   **メリット**: コピーしないので高速。
+    *   **デメリット**: ライフタイム指定が必要になり、コードが複雑になる。
+
+今回は**シンプルさ優先**で `clone()` を採用している。Rust 初学者はまず `clone` で動くものを作り、後で必要なら最適化するのが良い戦略！
+
+---
+
