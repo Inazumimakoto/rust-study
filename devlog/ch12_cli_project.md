@@ -273,3 +273,45 @@ fn anonymous_function(err: &'static str) {
 ```
 これと同じことを `|err| { ... }` で短く書いているだけ！🦀
 
+---
+
+## 6. リファクタリング: ロジックの分離 (`run` 関数)
+
+`main` 関数は「設定の解析」と「エラー処理」に集中させ、実際のファイル読み出しなどのロジックは `run` 関数に移動する。
+
+### 実装 (`src/main.rs`)
+
+```rust
+fn main() {
+    // ... Config 設定 ...
+
+    run(config); // 所有権を渡す
+}
+
+fn run(config: Config) {
+    let mut f = File::open(config.filename).expect("file not found");
+
+    let mut contents = String::new();
+    f.read_to_string(&mut contents).expect("something went wrong reading the file");
+
+    println!("With text:\n{}", contents);
+}
+```
+
+### 💡 疑問: なぜ `config` の所有権を渡すの？
+*   **A. `main` でもう使わないから！**
+    *   `run` はプログラムの最後で呼ばれるため、`main` 関数側で `config` を保持し続ける必要がない。
+    *   参照 `&config` でも動くが、所有権を渡してしまった方が「`main` はこれ以上 `config` に関知しない」と断言できてシンプル。
+
+### 💡 疑問: `read_to_string` が失敗する時って？
+`File::open` の失敗（ファイルがない）はわかるけど、開いた後の読み込みでエラーになるのはどんな時？
+
+1.  **UTF-8 じゃないデータ**
+    *   `String` は必ず UTF-8 でなければならない。画像やバイナリファイルを開こうとするとここで死ぬ。
+2.  **I/O エラー**
+    *   読み込み中に USB メモリが抜かれた。
+    *   ファイルシステムの権限などの問題。
+
+---
+
+
