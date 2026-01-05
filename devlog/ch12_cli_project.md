@@ -314,4 +314,72 @@ fn run(config: Config) {
 
 ---
 
+## 7. リファクタリング: `run` 関数のエラー処理
+
+`run` 関数でも `expect` でパニックするのではなく、エラーを親元（`main`）に返して、親元で適切に処理するように変更する。
+
+### 実装 (`src/main.rs`)
+
+```rust
+use std::error::Error; // エラー用トレイト
+
+fn main() {
+    // if let: パターンマッチの簡略版。「もし Err(e) なら...」
+    if let Err(e) = run(config) {
+        println!("Application error: {}", e);
+        process::exit(1);
+    }
+}
+
+// 戻り値: Result<(), Box<dyn Error>>
+// 成功時: () (ユニット型＝何もない), 失敗時: Box<dyn Error> (あらゆるエラー)
+fn run(config: Config) -> Result<(), Box<dyn Error>> {
+    // ? 演算子: 成功なら中身を取り出し、失敗なら即座に return Err(e) する
+    let mut f = File::open(config.filename)?;
+
+    let mut contents = String::new();
+    f.read_to_string(&mut contents)?;
+
+    println!("With text:\n{}", contents);
+    Ok(()) // 最後に成功を表す () を Ok で包んで返す
+}
+```
+
+### 💡 徹底解説: 呪文の意味を解読！
+
+#### 1. `Box<dyn Error>` って何？
+**「どんな種類のエラーでも入る魔法の箱」**
+
+*   `Box`: メモリ上のヒープ領域にデータを置くためのポインタ（箱）。
+*   `dyn Error`: "Dynamic" (動的)。`Error` トレイトを実装している型なら **何の種類でもいい** という意味。
+*   ファイルが見つからないエラーも、読み込みエラーも、種類は違うけど全部「エラー」としてひとまとめに扱いたい時に使う「多態性（ポリモーフィズム）」の機能。
+
+#### 2. `?` 演算子 (はてな？)
+**「エラーなら即リターン、成功なら中身を取り出す」ショートカット**
+
+これと同じ意味：
+```rust
+let f = match File::open(config.filename) {
+    Ok(file) => file,
+    Err(e) => return Err(Box::new(e)), // エラーなら関数から脱出！
+};
+```
+これをたった1文字 `?` で書ける超便利機能！エラー伝播（Propagation）の基本。
+
+#### 3. `if let Err(e) = run(config)`
+**「もし失敗だったら...」だけ書きたい時の構文**
+
+普通は `match` を使うけど：
+```rust
+match run(config) {
+    Ok(_) => (), // 成功時は何もしない（無駄）
+    Err(e) => { ... } // 失敗時だけ処理したい
+}
+```
+これだと `Ok` の部分が邪魔。
+`if let` を使うと、「`run` の結果が `Err(e)` のパターンにマッチした時だけ中身を実行する」とスマートに書ける！
+
+---
+
+
 
