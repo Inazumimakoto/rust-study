@@ -52,3 +52,45 @@ fn main() {
 *   データをコピー（`clone`）したり移動（`move`）させたりせず、参照を使うのがメモリ効率が良いベストプラクティス。
 
 ---
+
+## 2. リファクタリング: 引数解析の抽出
+
+`main` 関数が大きくなってきたので、引数解析のロジックを別の関数 `parse_config` に切り出す。
+
+### 実装 (`src/main.rs`)
+
+```rust
+fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    let (query, filename) = parse_config(&args);
+
+    // ...
+}
+
+fn parse_config(args: &[String]) -> (&str, &str) {
+    let query = &args[1];
+    let filename = &args[2];
+
+    (query, filename)
+}
+```
+
+### 💡 なぜ `args: &[String]` なの？
+
+`args` は `Vec<String>` なのに、なぜ関数の引数は `&[String]` （文字列スライス）にするのか？
+
+#### 比較
+
+| 書き方 | 意味 | メリット・デメリット |
+|--------|------|----------------------|
+| `args: Vec<String>` | 所有権をもらう | 元の場所で `args` が使えなくなる（move）。 |
+| `args: &Vec<String>` | `Vec` の参照をもらう | `Vec` しか受け取れない。 |
+| **`args: &[String]`** | **スライスをもらう** | **最も柔軟！** `Vec` 全体も、配列も、その一部も受け取れる。 |
+
+#### ポイント
+*   Rust では、コレクションへの参照を引数にする場合、**スライス (`&[T]`) を使うのが慣習（Idiom）**。
+*   `&args` と書くだけで、Rust コンパイラが自動的に `&Vec<String>` を `&[String]` に変換してくれる（**Deref Coercion**）。
+*   これにより、関数は「データの入れ物が何であれ、連続したデータの並びであれば何でもOK」という広い心を持つことができる。
+
+---
